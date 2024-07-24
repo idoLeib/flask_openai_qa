@@ -7,16 +7,7 @@ services:
       - "5000:5000"
     environment:
       - FLASK_ENV=development
-
-
       - QA_POSTGRES_DATABASE_URL=postgresql://postgres:leibushor@db:5433/qa_flask_app_db     
-
-
-
-
-
-
-
     depends_on:
       - db
 
