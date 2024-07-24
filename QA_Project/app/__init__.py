@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from app.config import Config
+from app.models import db, Question, init_app as init_db
 import openai
 
 
@@ -15,8 +16,7 @@ def create_app():
     """
     app = Flask(__name__)
     app.config.from_object(Config)
-
-    # Set your OpenAI API key from the configuration
+    init_db(app)
     openai.api_key = app.config['OPENAI_API_KEY']
 
     @app.route('/ask', methods=['POST'])
@@ -43,8 +43,13 @@ def create_app():
                     },
                 ],
             )
-        print(response.choices[0].message.content)
+        #get answer
         answer = response.choices[0].message.content.strip()
+
+        #save question and answer in DB
+        db_question = Question(question_text=question, answer_text=answer)
+        db.session.add(db_question)
+        db.session.commit()
 
         return jsonify({'question': question, 'answer': answer})
 
